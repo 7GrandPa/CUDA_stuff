@@ -2,9 +2,12 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-#include <stdio.h>
+#include <iostream>
+
+using namespace std;
 
 cudaError_t addWithCuda(int *c, const int *a, const int *b, unsigned int size);
+void viewDeviceProp();
 
 __global__ void addKernel(int *c, const int *a, const int *b)
 {
@@ -47,6 +50,7 @@ int main()
         return 1;
     }
 
+	viewDeviceProp();
     return 0;
 }
 
@@ -128,4 +132,16 @@ Error:
     cudaFree(dev_b);
     
     return cudaStatus;
+}
+void viewDeviceProp() {
+	int dev = 0;
+	cudaDeviceProp devProp;
+	cudaGetDeviceProperties(&devProp, dev);
+
+	cout << "Using GPU device " << dev << ":" << devProp.name << endl;
+	cout << "Num of SM: " << devProp.multiProcessorCount << endl;
+	cout << "Share memory size: " << devProp.sharedMemPerBlock / 1024.0 << "KB" << endl;
+	cout << "Max Threads of a Block: " << devProp.maxThreadsPerBlock << endl;
+	cout << "Max Threads of a EM: " << devProp.maxThreadsPerMultiProcessor << endl;
+	cout << "Max wraps of a EM: " << devProp.maxThreadsPerMultiProcessor / 32 << endl;
 }
